@@ -1,0 +1,18 @@
+id: doyle-spirals
+name: Doyle spirals
+author: Robin Houston
+sdk_version: 2
+
+settings:
+  - property: p
+    name: p
+    type: number
+  - property: q
+    name: q
+    type: number
+  - property: ms_per_repeat
+    name: Animation speed (ms)
+    type: number
+  - property: colors
+    name: Colours
+    type: string
