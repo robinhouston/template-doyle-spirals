@@ -1,10 +1,12 @@
 window.template = (function() {
     var state = {
-        p: 9, q: 24, ms_per_repeat: 300,
-        colors: "#4499BB, #483352, #486078"
+        p: 9, q: 24, ms_per_repeat: 3000,
+        colors: "#4499BB, #483352, #486078",
+        color_offset: 0,
+        color_q_arms: false,
     };
 
-    var canvas, context, root;
+    var canvas, context, root, colors;
 
     // Circle drawing
     function circle(x, y, r) {
@@ -29,7 +31,7 @@ window.template = (function() {
     }
 
     // Doyle spiral drawing
-    function spiral(r, start_point, delta, options) {
+    function drawArm(r, start_point, delta, options) {
         var recip_delta = crecip(delta),
             mod_delta = modulus(delta),
             mod_recip_delta = 1/mod_delta,
@@ -60,9 +62,32 @@ window.template = (function() {
         }
     }
 
+    function drawSpiral(start, min_d, max_d) {
+        for (var i=0; i<state.q; i++) {
+            drawArm(root.r, start, root.a, {
+                fill: colors, i: (i*state.color_offset)%colors.length,
+                min_d: min_d, max_d: max_d
+            });
+            start = cmul(start, root.b);
+        }
+    }
+
+    function drawSpiralAlt(start, min_d, max_d) {
+        for (var i=0; i<state.q; i++) {
+            drawArm(root.r, start, root.a, {
+                fill: [colors[i % colors.length]], i: 0,
+                min_d: min_d, max_d: max_d
+            });
+            start = cmul(start, root.b);
+        }
+    }
+
     function frame(t) {
-        if (canvas.width != window.innerWidth) canvas.width = window.innerWidth;
-        if (canvas.height != window.innerHeight) canvas.height = window.innerHeight;
+        var w = window.innerWidth,
+            h = window.innerHeight,
+            d = window.devicePixelRatio;
+        if (canvas.width != w*d) { canvas.width = w*d; canvas.style.width = w + "px"; }
+        if (canvas.height != h*d) { canvas.height = h*d; canvas.style.height = h + "px"; }
 
         context.setTransform(1, 0, 0, 1, 0, 0);
         context.clearRect(0, 0, canvas.width, canvas.height);
@@ -72,22 +97,13 @@ window.template = (function() {
         context.scale(scale, scale);
         context.rotate(root.arg_a * t);
 
-        var min_d = 1/scale, max_d = canvas.width * 2;
-        var start = root.a;
-        var colors = state.colors.split(/\s*,\s*/);
-        for (var i=0; i<state.q; i++) {
-            spiral(root.r, start, root.a, {
-                fill: colors, i: (2*i)%colors.length,
-                min_d: min_d, max_d: max_d
-            });
-            start = cmul(start, root.b);
-        }
+        (state.color_q_arms ? drawSpiralAlt : drawSpiral)(root.a, 1/scale, canvas.width * 2);
     }
 
     var first_timestamp;
     function loop(timestamp) {
         if (!first_timestamp) first_timestamp = timestamp;
-        frame(((timestamp - first_timestamp) % (state.ms_per_repeat*3)) / state.ms_per_repeat);
+        frame(((timestamp - first_timestamp) % (state.ms_per_repeat*colors.length)) / state.ms_per_repeat);
         requestAnimationFrame(loop);
     }
 
@@ -95,7 +111,7 @@ window.template = (function() {
         // Initialisation
         canvas = document.getElementsByTagName("canvas")[0];
         context = canvas.getContext("2d");
-        root = doyle(state.p, state.q);
+        update();
 
         // Animation
         requestAnimationFrame(loop);
@@ -111,6 +127,7 @@ window.template = (function() {
         checkPositive(state.ms_per_repeat);
 
         root = doyle(state.p, state.q);
+        colors = state.colors.split(/\s*,\s*/);
     }
 
     return {

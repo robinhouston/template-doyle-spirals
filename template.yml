@@ -4,15 +4,29 @@ author: Robin Houston
 sdk_version: 2
 
 settings:
+  - Spirals
   - property: p
     name: p
+    description: number of arms in one spiral
     type: number
   - property: q
     name: q
+    description: number of arms in the other spiral
     type: number
+  - Animation
   - property: ms_per_repeat
     name: Animation speed (ms)
     type: number
+  - Colours
   - property: colors
     name: Colours
+    description: The number of colours should be a divisor of p to make them match up nicely
     type: string
+  - property: color_offset
+    name: Colour shift
+    description: How many steps to shift the colour pattern between adjacent spirals
+    type: number
+  - property: color_q_arms
+    name: Alternate colouring
+    description: Colour the “q” arms
+    type: boolean
