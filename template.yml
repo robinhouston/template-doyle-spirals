@@ -20,7 +20,7 @@ settings:
   - Colours
   - property: colors
     name: Colours
-    description: The number of colours should be a divisor of p to make them match up nicely
+    description: The number of colours should be a divisor of p to make them match up nicely (or of q if you have selected “Alternate colouring”)
     type: string
   - property: color_offset
     name: Colour shift
