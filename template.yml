@@ -24,7 +24,7 @@ settings:
     type: string
   - property: color_offset
     name: Colour shift
-    description: How many steps to shift the colour pattern between adjacent spirals
+    description: How many steps to shift the colour pattern between adjacent spirals. (Has no effect in “Alternate colouring” mode.)
     type: number
   - property: color_q_arms
     name: Alternate colouring
